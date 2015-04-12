@@ -19,7 +19,7 @@ namespace Debugging
                 var tmpPar = obj as ThreadParameters;
 
                 if (tmpPar.goingAheadThread != null)
-                    tmpPar.goingAheadThread.WaitOne();
+                    tmpPar.goingAheadThread.WaitOne();  // Ожидаем, когда освободится впередиидущий поток
 
                 string logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Log");
 
@@ -35,17 +35,23 @@ namespace Debugging
                 //}
 
                 if (tmpPar.currentThread != null)
-                    tmpPar.currentThread.Set();
+                    tmpPar.currentThread.Set();     // Сообщаем позадиидущему потоку, что он может продолжить выполнение
             }
             catch (Exception ex) { throw ex; }
         }
 
         public static void Write(string message)
         {
-            _goingAheadThread = _currentThread;
-            _currentThread = new AutoResetEvent(false);
+            _goingAheadThread = _currentThread;             // Прошлый поток устанавливаем впередиидущим
+            _currentThread = new AutoResetEvent(false);     // Для текущего потока создаем новую автоблокировку
             ThreadPool.QueueUserWorkItem(WriteAsync, 
                 new ThreadParameters(new string(message.ToCharArray()), _goingAheadThread, _currentThread));
         }
+
+        //~Log()
+        //{
+        //    if (_currentThread != null)
+        //        _currentThread.WaitOne();
+        //}
     }
 }
