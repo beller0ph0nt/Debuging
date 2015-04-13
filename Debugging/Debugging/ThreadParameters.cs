@@ -1,22 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
+﻿using System.Threading;
 
 namespace Debugging
 {
+    /// <summary>
+    /// Класс параметров, передаваемых потоку
+    /// </summary>
     public class ThreadParameters
     {
-        public string message { get; private set; }
-        public AutoResetEvent goingAheadThread { get; private set; }
-        public AutoResetEvent currentThread { get; private set; }
+        #region Свойства
 
-        public ThreadParameters(string message, AutoResetEvent goingAheadThread, AutoResetEvent currentThread)
+        /// <summary>
+        /// Текстовое сообщение, передаваемое потоку
+        /// </summary>
+        public string message { get; private set; }
+
+        /// <summary>
+        /// Событие автоматического сброса для впереди идущего потока
+        /// </summary>
+        public AutoResetEvent goingAheadThread { get; private set; }
+
+        /// <summary>
+        /// Событие автоматического сброса для позади идущего потока
+        /// </summary>
+        public AutoResetEvent goingBehindThread { get; private set; }
+
+        #endregion
+
+        /// <summary>
+        /// Конструктор
+        /// </summary>
+        /// <param name="message">Сообщение, передаваемое потоку</param>
+        /// <param name="goingAheadThread">Событие автоматического сброса для впереди идущего потока</param>
+        /// <param name="goingBehindThread">Событие автоматического сброса для позади идущего потока</param>
+        public ThreadParameters(string message, AutoResetEvent goingAheadThread, AutoResetEvent goingBehindThread)
         {
             this.message = message;
             this.goingAheadThread = goingAheadThread;
-            this.currentThread = currentThread;
+            this.goingBehindThread = goingBehindThread;
         }
     }
 }
