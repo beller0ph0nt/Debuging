@@ -22,6 +22,7 @@ namespace Debugging
             try
             {
                 var tmpPar = obj as ThreadParameters;
+                // !!! Возможно данную переменную необходимо вынести как константу !!!
                 string logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Log");
 
                 if (!Directory.Exists(logPath)) Directory.CreateDirectory(logPath);
@@ -40,8 +41,12 @@ namespace Debugging
             catch (Exception ex) { throw ex; }
         }
 
+        /// <summary>
+        /// Метод, вызывающий асинхронную запись
+        /// </summary>
+        /// <param name="message">Сообщение для log-файла</param>
         public static void Write(string message)
-        {
+        {   // !!! По иде достаточно только переменной _goingBehindThread !!!
             _goingAheadThread = _goingBehindThread;             // Прошлый поток устанавливаем впередиидущим
             _goingBehindThread = new AutoResetEvent(false);     // Для текущего потока создаем новое событие автоматического сброса
             ThreadPool.QueueUserWorkItem(WriteAsync,
