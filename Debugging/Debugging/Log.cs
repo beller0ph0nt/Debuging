@@ -22,13 +22,15 @@ namespace Debugging
             try
             {
                 var tmpPar = obj as ThreadParameters;
+                DateTime dateTime = DateTime.Now;
+
                 // !!! Возможно данную переменную необходимо вынести как константу !!!
                 string logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Log");
 
                 if (!Directory.Exists(logPath)) Directory.CreateDirectory(logPath);
 
-                string filename = Path.Combine(logPath, string.Format("{0}_{1:dd.MM.yyy}.log", AppDomain.CurrentDomain.FriendlyName, DateTime.Now));
-                string fullText = string.Format("[{0:dd.MM.yyy HH:mm:ss.fff}] {1}\r\n", DateTime.Now, tmpPar.message);
+                string filename = Path.Combine(logPath, string.Format("{0}_{1:dd.MM.yyy}.log", AppDomain.CurrentDomain.FriendlyName, dateTime));
+                string fullText = string.Format("[{0:dd.MM.yyy HH:mm:ss.fff}] {1}\r\n", dateTime, tmpPar.message);
 
                 // Если есть впередиидущий поток, то ожидаем когда он освободится 
                 if (tmpPar.goingAheadThread != null) tmpPar.goingAheadThread.WaitOne();
