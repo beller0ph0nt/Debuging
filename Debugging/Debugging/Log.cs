@@ -25,8 +25,6 @@ namespace Debugging
             try
             {
                 logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Log");
-
-                if (!Directory.Exists(logPath)) Directory.CreateDirectory(logPath);
             }
             catch (Exception ex) { throw ex; }
         }
@@ -43,6 +41,8 @@ namespace Debugging
                 DateTime dateTime = DateTime.Now;
                 string filename = Path.Combine(logPath, string.Format("{0}_{1:dd.MM.yyy}.log", AppDomain.CurrentDomain.FriendlyName, dateTime));
                 string fullText = string.Format("[{0:dd.MM.yyy HH:mm:ss.fff}] {1}\r\n", dateTime, tmpPar.message);
+
+                if (!Directory.Exists(logPath)) Directory.CreateDirectory(logPath);
 
                 // Если есть впередиидущий поток, то ожидаем когда он освободится 
                 if (tmpPar.goingAheadThread != null) tmpPar.goingAheadThread.WaitOne();
