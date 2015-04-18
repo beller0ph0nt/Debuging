@@ -10,8 +10,26 @@ namespace Debugging
     /// </summary>
     public class Log
     {
+        public static readonly string logPath;                      // Путь до log-файлов
         private static AutoResetEvent _goingAheadThread = null;     // Впереди идущий поток
         private static AutoResetEvent _goingBehindThread = null;    // Позади идущий поток
+
+        public static AutoResetEvent GoingAheadThread { get { return _goingAheadThread; } }
+        public static AutoResetEvent GoingBehindThread { get { return _goingBehindThread; } }
+
+        /// <summary>
+        /// Статический конструктор
+        /// </summary>
+        static Log()
+        {
+            try
+            {
+                logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Log");
+
+                if (!Directory.Exists(logPath)) Directory.CreateDirectory(logPath);
+            }
+            catch (Exception ex) { throw ex; }
+        }
 
         /// <summary>
         /// Метод, реализующий асинхронную запись
@@ -23,12 +41,6 @@ namespace Debugging
             {
                 var tmpPar = obj as ThreadParameters;
                 DateTime dateTime = DateTime.Now;
-
-                // !!! Возможно данную переменную необходимо вынести как константу !!!
-                string logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Log");
-
-                if (!Directory.Exists(logPath)) Directory.CreateDirectory(logPath);
-
                 string filename = Path.Combine(logPath, string.Format("{0}_{1:dd.MM.yyy}.log", AppDomain.CurrentDomain.FriendlyName, dateTime));
                 string fullText = string.Format("[{0:dd.MM.yyy HH:mm:ss.fff}] {1}\r\n", dateTime, tmpPar.message);
 
@@ -51,10 +63,15 @@ namespace Debugging
         {   // !!! По иде достаточно только переменной _goingBehindThread !!!
             _goingAheadThread = _goingBehindThread;             // Прошлый поток устанавливаем впередиидущим
             _goingBehindThread = new AutoResetEvent(false);     // Для текущего потока создаем новое событие автоматического сброса
-            ThreadPool.QueueUserWorkItem(WriteAsync,
-                                         new ThreadParameters(new string(message.ToCharArray()),
-                                                              _goingAheadThread,
-                                                              _goingBehindThread));
+
+            try
+            {
+                ThreadPool.QueueUserWorkItem(WriteAsync,
+                                             new ThreadParameters(new string(message.ToCharArray()),
+                                                                  _goingAheadThread,
+                                                                  _goingBehindThread));
+            }
+            catch (Exception ex) { throw ex; }
         }
     }
 }
