@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Debugging;
+﻿using Debugging;
+using System;
 using System.IO;
 
 namespace Test
@@ -26,7 +22,7 @@ namespace Test
 
             i = 0;
             errorsFlag = false;
-            foreach (string filePath in Directory.EnumerateFiles(Log.logPath))
+            foreach (string filePath in Directory.GetFiles(Log.logPath))
             {
                 string line;
                 using (var file = new System.IO.StreamReader(filePath))
