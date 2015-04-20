@@ -80,13 +80,14 @@ namespace Debugging
         /// <param name="ex">Исключение</param>
         public static void Write(Exception ex)
         {
-            Write("Data: " + ex.Data.ToString() + "\n" +
-                "HelpLink: " + ex.HelpLink + "\n" +
-                "InnerException: " + ex.InnerException + "\n" +
-                "Message: " + ex.Message + "\n" +
-                "Source: " + ex.Source + "\n" +
-                "StackTrace: " + ex.StackTrace + "\n" +
-                "StackTrace: " + ex.TargetSite);
+            Write("Exception" +
+                "    Data: " + ex.Data.ToString() + "\n" +
+                "    HelpLink: " + ex.HelpLink + "\n" +
+                "    InnerException: " + ex.InnerException + "\n" +
+                "    Message: " + ex.Message + "\n" +
+                "    Source: " + ex.Source + "\n" +
+                "    StackTrace: " + ex.StackTrace + "\n" +
+                "    StackTrace: " + ex.TargetSite);
         }
     }
 }
