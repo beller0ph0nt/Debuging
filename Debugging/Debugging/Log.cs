@@ -6,63 +6,63 @@ using System.Threading;
 namespace Debugging
 {
     /// <summary>
-    /// Класс, реализующий асинхронную запись log-файлов
+    /// реализует асинхронную запись log-файлов
     /// </summary>
-    public class Log
+    public static class Log
     {
-        public static readonly string logPath;                      // Путь до log-файлов
-        private static AutoResetEvent _goingAheadThread = null;     // Впереди идущий поток
-        private static AutoResetEvent _goingBehindThread = null;    // Позади идущий поток
+        private static readonly string _logPath;                    // путь до log-файлов
+        private static AutoResetEvent _goingAheadThread = null;     // впереди идущий поток
+        private static AutoResetEvent _goingBehindThread = null;    // позади идущий поток
 
-        public static AutoResetEvent GoingAheadThread { get { return _goingAheadThread; } }
-        public static AutoResetEvent GoingBehindThread { get { return _goingBehindThread; } }
+        public static string LogPath { get { return _logPath; } }
 
         /// <summary>
-        /// Статический конструктор
+        /// статический конструктор
         /// </summary>
         static Log()
         {
             try
             {
-                logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Log");
+                _logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Log");
             }
             catch (Exception ex) { throw ex; }
         }
 
         /// <summary>
-        /// Метод, реализующий асинхронную запись
+        /// реализует асинхронную запись
         /// </summary>
-        /// <param name="obj">Класс, передаваемых потоку параметров</param>
+        /// <param name="obj">передаваемыае потоку параметры</param>
         private static void WriteAsync(object obj)
         {
             try
             {
-                var tmpPar = obj as ThreadParameters;
+                var par = obj as ThreadParameters;
                 DateTime dateTime = DateTime.Now;
-                string filename = Path.Combine(logPath, string.Format("{0}_{1:dd.MM.yyy}.log", AppDomain.CurrentDomain.FriendlyName, dateTime));
-                string fullText = string.Format("[{0:dd.MM.yyy HH:mm:ss.fff}] {1}\r\n", dateTime, tmpPar.message);
+                string filename = Path.Combine(_logPath, string.Format("{0}_{1:dd.MM.yyy}.log", AppDomain.CurrentDomain.FriendlyName, dateTime));
+                string fullText = string.Format("[{0:dd.MM.yyy HH:mm:ss.fff}] {1}\r\n", dateTime, par.message);
 
-                if (!Directory.Exists(logPath)) Directory.CreateDirectory(logPath);
+                if (!Directory.Exists(_logPath))
+                    Directory.CreateDirectory(_logPath);
 
-                // Если есть впередиидущий поток, то ожидаем когда он освободится 
-                if (tmpPar.goingAheadThread != null) tmpPar.goingAheadThread.WaitOne();
+                if (par.goingAheadThread != null)    // если есть впередиидущий поток
+                    par.goingAheadThread.WaitOne();  // ожидаем когда поток освободится 
 
                 File.AppendAllText(filename, fullText, Encoding.GetEncoding("Windows-1251"));
 
-                // Если есть позади идущий поток, то сообщаем ему, что он может продолжить выполнение
-                if (tmpPar.goingBehindThread != null) tmpPar.goingBehindThread.Set();
+                if (par.goingBehindThread != null)   // если есть позади идущий поток
+                    par.goingBehindThread.Set();     // сообщаем потоку, что он может продолжить выполнение
             }
             catch (Exception ex) { throw ex; }
         }
 
         /// <summary>
-        /// Метод, вызывающий асинхронную запись
+        /// записывает информацию в лог
         /// </summary>
-        /// <param name="message">Сообщение для log-файла</param>
+        /// <param name="message">сообщение для записи</param>
         public static void Write(string message)
-        {   // !!! По иде достаточно только переменной _goingBehindThread !!!
-            _goingAheadThread = _goingBehindThread;             // Прошлый поток устанавливаем впередиидущим
-            _goingBehindThread = new AutoResetEvent(false);     // Для текущего потока создаем новое событие автоматического сброса
+        {   // !!! по идее достаточно только переменной _goingBehindThread !!!
+            _goingAheadThread = _goingBehindThread;             // прошлый поток устанавливаем впередиидущим
+            _goingBehindThread = new AutoResetEvent(false);     // для текущего потока создаем новое событие автоматического сброса
 
             try
             {
@@ -75,9 +75,9 @@ namespace Debugging
         }
 
         /// <summary>
-        /// Метод, асинхронной записи информации об исключении
+        /// записывает информацию об исключении
         /// </summary>
-        /// <param name="ex">Исключение</param>
+        /// <param name="ex">исключение</param>
         public static void Write(Exception ex)
         {
             Write("Exception" +
@@ -88,6 +88,15 @@ namespace Debugging
                 "    Source: " + ex.Source + "\n" +
                 "    StackTrace: " + ex.StackTrace + "\n" +
                 "    StackTrace: " + ex.TargetSite);
+        }
+
+        /// <summary>
+        /// ожидает завершения записи последнего потока
+        /// </summary>
+        public static void WaitWriteFinish()
+        {
+            if (_goingBehindThread != null)
+                _goingBehindThread.WaitOne();
         }
     }
 }
