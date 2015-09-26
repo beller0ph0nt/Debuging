@@ -23,7 +23,7 @@ namespace Debugging
         {
             try
             {
-                _logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Log");
+                _logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "log");
             }
             catch (Exception ex) { throw ex; }
         }
