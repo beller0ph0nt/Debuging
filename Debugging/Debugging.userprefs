@@ -1,11 +1,20 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Test/Program.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Debugging/Log.cs">
     <Files>
-      <File FileName="Test/Program.cs" Line="2" Column="2" />
-      <File FileName="Debugging/Log.cs" Line="7" Column="7" />
-      <File FileName="Debugging/ThreadParameters.cs" Line="5" Column="5" />
+      <File FileName="Test/Program.cs" Line="1" Column="1" />
+      <File FileName="Debugging/Log.cs" Line="37" Column="16" />
+      <File FileName="Debugging/ThreadParameters.cs" Line="1" Column="1" />
     </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State expanded="True">
+          <Node name="Debugging" expanded="True">
+            <Node name="Log.cs" selected="True" />
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
